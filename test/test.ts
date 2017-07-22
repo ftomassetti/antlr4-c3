@@ -15,6 +15,8 @@ import { ExprParser } from "./ExprParser";
 import { ExprLexer } from "./ExprLexer";
 import { CPP14Parser } from "./CPP14Parser";
 import { CPP14Lexer } from "./CPP14Lexer";
+import { SandyParser } from "./SandyParser";
+import { SandyLexer } from "./SandyLexer";
 
 import * as c3 from "../index";
 
@@ -721,6 +723,37 @@ describe('antlr4-c3:', function () {
 
       done();
     }).timeout(60000);
+  });
+
+  describe('Sandy example:', function () {
+    it("Empty file", function (done) {
+      // No customization happens here, so the c3 engine only returns lexer tokens.
+      let inputStream = new ANTLRInputStream("");
+      let lexer = new SandyLexer(inputStream);
+      let tokenStream = new CommonTokenStream(lexer);
+
+      let parser = new SandyParser(tokenStream);
+      let errorListener = new ErrorListener();
+      parser.removeErrorListeners();
+      parser.addErrorListener(errorListener);
+      let tree = parser.sandyFile();
+      //expect(errorListener.errorCount, "Test 1").equals(0);
+
+      let core = new c3.CodeCompletionCore(parser);
+
+      // 1) At the input start.
+      let candidates = core.collectCandidates(0);
+
+      expect(candidates.tokens.size, "Test 2").to.equal(2);
+      expect(candidates.tokens.has(SandyLexer.VAR), "Test 3").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.ID), "Test 4").to.equal(true);
+
+      //expect(candidates.tokens.get(ExprLexer.VAR), "Test 5").to.eql([ExprLexer.ID, ExprLexer.EQUAL]);
+      //expect(candidates.tokens.get(ExprLexer.ID), "Test 6").to.eql([]);
+
+      done();
+    });
+
   });
 
 

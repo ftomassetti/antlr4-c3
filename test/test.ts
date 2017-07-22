@@ -737,19 +737,89 @@ describe('antlr4-c3:', function () {
       parser.removeErrorListeners();
       parser.addErrorListener(errorListener);
       let tree = parser.sandyFile();
-      //expect(errorListener.errorCount, "Test 1").equals(0);
 
       let core = new c3.CodeCompletionCore(parser);
 
-      // 1) At the input start.
       let candidates = core.collectCandidates(0);
 
-      expect(candidates.tokens.size, "Test 2").to.equal(2);
-      expect(candidates.tokens.has(SandyLexer.VAR), "Test 3").to.equal(true);
-      expect(candidates.tokens.has(SandyLexer.ID), "Test 4").to.equal(true);
+      expect(candidates.tokens.size, "Test 1").to.equal(2);
+      expect(candidates.tokens.has(SandyLexer.VAR), "Test 2").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.ID), "Test 3").to.equal(true);
 
-      //expect(candidates.tokens.get(ExprLexer.VAR), "Test 5").to.eql([ExprLexer.ID, ExprLexer.EQUAL]);
-      //expect(candidates.tokens.get(ExprLexer.ID), "Test 6").to.eql([]);
+      done();
+    });
+
+    it("After var", function (done) {
+      // No customization happens here, so the c3 engine only returns lexer tokens.
+      let inputStream = new ANTLRInputStream("var ");
+      let lexer = new SandyLexer(inputStream);
+      let tokenStream = new CommonTokenStream(lexer);
+
+      let parser = new SandyParser(tokenStream);
+      let errorListener = new ErrorListener();
+      parser.removeErrorListeners();
+      parser.addErrorListener(errorListener);
+      let tree = parser.sandyFile();
+
+      let core = new c3.CodeCompletionCore(parser);
+
+      let candidates = core.collectCandidates(2);
+
+      expect(candidates.tokens.size, "Test 1").to.equal(1);
+      expect(candidates.tokens.has(SandyLexer.ID), "Test 2").to.equal(true);
+
+      done();
+    });
+
+    it("After equals", function (done) {
+      // No customization happens here, so the c3 engine only returns lexer tokens.
+      let inputStream = new ANTLRInputStream("var a = ");
+      let lexer = new SandyLexer(inputStream);
+      let tokenStream = new CommonTokenStream(lexer);
+
+      let parser = new SandyParser(tokenStream);
+      let errorListener = new ErrorListener();
+      parser.removeErrorListeners();
+      parser.addErrorListener(errorListener);
+      let tree = parser.sandyFile();
+
+      let core = new c3.CodeCompletionCore(parser);
+
+      let candidates = core.collectCandidates(6);
+
+      expect(candidates.tokens.size, "Test 1").to.equal(5);
+      expect(candidates.tokens.has(SandyLexer.INTLIT), "Test 2").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.DECLIT), "Test 3").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.MINUS), "Test 4").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.LPAREN), "Test 5").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.ID), "Test 6").to.equal(true);
+
+      done();
+    });
+
+    it("After literal", function (done) {
+      // No customization happens here, so the c3 engine only returns lexer tokens.
+      let inputStream = new ANTLRInputStream("var a = 1 ");
+      let lexer = new SandyLexer(inputStream);
+      let tokenStream = new CommonTokenStream(lexer);
+
+      let parser = new SandyParser(tokenStream);
+      let errorListener = new ErrorListener();
+      parser.removeErrorListeners();
+      parser.addErrorListener(errorListener);
+      let tree = parser.sandyFile();
+
+      let core = new c3.CodeCompletionCore(parser);
+
+      let candidates = core.collectCandidates(8);
+
+      expect(candidates.tokens.size, "Test 1").to.equal(6);
+      expect(candidates.tokens.has(SandyLexer.NEWLINE), "Test 2").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.EOF), "Test 3").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.PLUS), "Test 4").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.MINUS), "Test 5").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.DIVISION), "Test 6").to.equal(true);
+      expect(candidates.tokens.has(SandyLexer.ASTERISK), "Test 7").to.equal(true);
 
       done();
     });

@@ -7,7 +7,7 @@
   "scripts": {
     "prepublishOnly": "npm run test",
     "test": "tsc --version && tsc && mocha out/test",
-    "generate": "antlr4ts test/CPP14.g4 test/Expr.g4 -no-listener -no-visitor"
+    "generate": "antlr4ts test/CPP14.g4 test/Expr.g4 test/SandyLexer.g4 -no-listener -no-visitor && cd test && antlr4ts SandyParser.g4 -no-listener -no-visitor"
   },
   "repository": {
     "type": "git",
